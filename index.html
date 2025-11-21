@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BECKS beta v0.4 — BDI & BAI</title>
+<style>
+  :root{--bg:#f6f8fb;--card:#fff;--accent:#0b6fa6;--muted:#6b7280}
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);margin:0;padding:20px;color:#0f172a}
+  .wrap{max-width:980px;margin:18px auto;background:var(--card);border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+  .header-row{display:flex;gap:12px;margin-bottom:12px}
+  input[type="text"],input[type="number"],select{padding:8px;border:1px solid #e6edf3;border-radius:8px;width:100%}
+  .tabs{display:flex;gap:8px;margin:12px 0}
+  .tab{padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700;color:var(--accent);background:transparent;border:1px solid transparent}
+  .tab.active{background:var(--accent);color:#fff}
+  .tab.locked{opacity:.45;cursor:not-allowed}
+  .panel{border:1px solid #e6edf3;padding:14px;border-radius:8px;background:#fff}
+  .qtitle{font-weight:700;margin-bottom:8px}
+  .options div{margin:8px 0}
+  .nav{display:flex;gap:8px;margin-top:14px;align-items:center}
+  .btn{padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid #d6eefc;color:var(--accent)}
+  .progress{height:10px;background:#eef6fb;border-radius:999px;overflow:hidden;margin:12px 0}
+  .bar{height:100%;background:var(--accent);width:0}
+  .small{font-size:13px;color:var(--muted)}
+  .hidden{display:none !important}
+  footer{margin-top:12px;font-size:13px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;margin-top:6px}
+</style>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <h2 style="margin:0 0 8px 0">BECKS — BDI & BAI</h2>
+  
+  <div style="display:flex;align-items:center; margin-bottom: 1rem; color: red;">
+    <button id="chooseTemplateBtn" class="btn ghost">Choose template PDF</button>
+    <span id="templateName" class="small" style="color: green; min-width:200px;display:inline-block"></span>
+  </div>
+
+  <!-- Header fields -->
+  <div class="header-row">
+    <input id="nameField" type="text" placeholder="Name" style="flex:2" />
+    <input id="ageField" type="number" placeholder="Age" style="flex:1" />
+    <select id="sexField" style="flex:1">
+      <option value="">Sex</option><option value="M">M</option><option value="F">F</option>
+    </select>
+    <input id="maritalField" type="text" placeholder="Marital Status" style="flex:1.2" />
+  </div>
+  <div class="header-row" style="margin-top:6px">
+    <input id="occupationField" type="text" placeholder="Occupation" style="flex:1.5" />
+    <input id="educationField" type="text" placeholder="Education" style="flex:1.5" />
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div id="tabBDI" class="tab active">BDI</div>
+    <div id="tabBAI" class="tab locked">BAI</div>
+  </div>
+
+  <!-- Progress -->
+  <div style="display:flex;gap:12px;align-items:center">
+    <div style="flex:1">
+      <div class="small">BDI progress</div>
+      <div class="progress"><div id="bdiBar" class="bar"></div></div>
+    </div>
+    <div style="flex:1">
+      <div class="small">BAI progress</div>
+      <div class="progress"><div id="baiBar" class="bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Panels -->
+  <div id="panelBDI" class="panel" style="margin-top:12px">
+    <div id="qAreaBDI"></div>
+    <div class="nav">
+      <button id="prevBDI" class="btn ghost hidden">Previous</button>
+      <button id="nextBDI" class="btn">Next</button>
+      <div style="flex:1"></div>
+      <div class="small">Page1 subtotal: <strong id="p1sub">0</strong> &nbsp;&nbsp; Page2 subtotal: <strong id="p2sub">0</strong></div>
+    </div>
+  </div>
+
+  <div id="panelBAI" class="panel" style="margin-top:12px;display:none">
+    <div id="qAreaBAI"></div>
+    <div class="nav">
+      <button id="prevBAI" class="btn ghost hidden">Previous</button>
+      <button id="nextBAI" class="btn">Next</button>
+      <div style="flex:1"></div>
+      <div class="small">Mild: <strong id="mildT">0</strong> &nbsp; Mod: <strong id="modT">0</strong> &nbsp; Severe: <strong id="sevT">0</strong> &nbsp; Total: <strong id="gT">0</strong></div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px;display:flex;gap:10px">
+    <button id="generateBtn" class="btn" disabled>Generate PDF</button>
+  </div>
+
+  <footer>Tip: choose template once, complete BDI then BAI, then Generate Report. Name is required for filename.</footer>
+</div>
+
+<script>
+/* ======= configuration ======= */
+let templateArrayBuffer = null;
+let templateFilename = '';
+
+/* ======= Questions ======= */
+const bdi1 = [
+  {id:1, text:"Sadness", opts:["I do not feel sad.","I feel sad much of the time.","I am sad all the time.","I am so sad or unhappy that I can't stand it."]},
+  {id:2, text:"Pessimism", opts:["I am not discouraged about my future.","I feel more discouraged about my future than I used to be.","I do not expect things to work out for me.","I feel my future is hopeless and will only get worse."]},
+  {id:3, text:"Past Failure", opts:["I do not feel like a failure.","I have failed more than I should have.","As I look back, I see a lot of failures.","I feel I am a total failure as a person."]},
+  {id:4, text:"Loss of Pleasure", opts:["I get as much pleasure as I ever did from the things I enjoy.","I don't enjoy things as much as I used to.","I get very little pleasure from the things I used to enjoy.","I can't get any pleasure from the things I used to enjoy."]},
+  {id:5, text:"Guilty Feelings", opts:["I don't feel particularly guilty.","I feel guilty over many things I have done or should have done.","I feel quite guilty most of the time.","I feel guilty all of the time."]},
+  {id:6, text:"Punishment Feelings", opts:["I don't feel I am being punished.","I feel I may be punished.","I expect to be punished.","I feel I am being punished."]},
+  {id:7, text:"Self-Dislike", opts:["I feel the same about myself as ever.","I have lost confidence in myself.","I am disappointed in myself.","I dislike myself."]},
+  {id:8, text:"Self-Criticalness", opts:["I don't criticize or blame myself more than usual.","I am more critical of myself for all of my faults.","I blame myself for everything bad that happens.","I blame myself for everything (extreme)."]},
+  {id:9, text:"Suicidal Thoughts or Wishes", opts:["I don't have any thoughts of killing myself.","I have thoughts of killing myself, but I would not carry them out.","I would like to kill myself.","I would kill myself if I had the chance."]},
+  {id:10, text:"Crying", opts:["I don't cry anymore than I used to.","I cry more than I used to.","I cry over every little thing.","I feel like crying, but I can't."]}
+];
+const bdi2 = [
+  {id:11, text:"Agitation", opts:["I am no more restless or wound up than usual.","I feel more restless or wound up than usual.","I am so restless or agitated that it's hard to stay still.","I am so restless or agitated that I have to keep moving or doing something."]},
+  {id:12, text:"Loss of Interest", opts:["I have not lost interest in other people or activities.","I am less interested in other people or things than before.","I have lost most of my interest in other people or things.","It's hard to get interested in anything."]},
+  {id:13, text:"Indecisiveness", opts:["I make decisions about as well as ever.","I find it more difficult to make decisions than usual.","I have much greater difficulty in making decisions than I used to.","I have trouble making any decisions."]},
+  {id:14, text:"Worthlessness", opts:["I do not feel I am worthless.","I don't consider myself as worthwhile and useful as I used to.","I feel more worthless as compared to other people.","I feel utterly worthless."]},
+  {id:15, text:"Loss of Energy", opts:["I have as much energy as ever.","I have less energy than I used to have.","I don't have enough energy to do very much.","I don't have enough energy to do anything."]},
+  {id:16, text:"Changes in Sleeping Pattern", opts:[
+    "0 - I have not experienced any change in my sleeping pattern.",
+    "1a - I sleep somewhat more than usual.",
+    "1b - I sleep somewhat less than usual.",
+    "2a - I sleep a lot more than usual.",
+    "2b - I sleep a lot less than usual.",
+    "3a - I sleep most of the day.",
+    "3b - I wake up 1-2 hours early and can't get back to sleep."
+  ]},
+  {id:17, text:"Irritability", opts:["I am no more irritable than usual.","I am more irritable than usual.","I am much more irritable than usual.","I am irritable all the time."]},
+  {id:18, text:"Changes in Appetite", opts:[
+    "0 - I have not experienced any change in my appetite.",
+    "1a - My appetite is somewhat less than usual.",
+    "1b - My appetite is somewhat greater than usual.",
+    "2a - My appetite is much less than before.",
+    "2b - My appetite is much greater than before.",
+    "3a - I have no appetite at all.",
+    "3b - I crave food all the time."
+  ]},
+  {id:19, text:"Concentration Difficulty", opts:["I can concentrate as well as ever.","I can't concentrate as well as usual.","It's hard to keep my mind on anything for very long.","I find I can't concentrate on anything."]},
+  {id:20, text:"Tiredness or Fatigue", opts:["I am no more tired or fatigued than usual.","I get more tired or fatigued more easily than usual.","I am too tired or fatigued to do a lot of the things I used to do.","I am too tired or fatigued to do most of the things I used to do."]},
+  {id:21, text:"Loss of Interest in Sex", opts:["I have not noticed any recent change in my interest in sex.","I am less interested in sex than I used to be.","I am much less interested in sex now.","I have lost interest in sex completely."]}
+];
+const bai = [
+  "Numbness or tingling","Feeling hot","Wobbliness in legs","Unable to relax",
+  "Fear of the worst happening","Dizzy or lightheaded","Heart pounding or racing",
+  "Unsteady","Terrified","Nervous","Feelings of choking","Hands trembling",
+  "Shaky","Fear of losing control","Difficulty breathing","Fear of dying",
+  "Scared","Indigestion/discomfort in abdomen","Faint","Face flushed","Sweating (not due to heat)"
+];
+const baiOpts = ["Not at all","Mildly, it did not bother me much","Moderately, it was very unpleasant but I could stand it","Severely, I could barely stand it"];
+
+/* ======= state ======= */
+let answers = { fields:{name:'',age:'',sex:'',marital:'',occupation:'',education:''}, page1:{}, page2:{}, page3:Array(bai.length).fill(null) };
+let step = 1;
+const bdiCount = bdi1.length + bdi2.length;
+const baiCount = bai.length;
+
+/* ======= coordinates (updated) ======= */
+const page1Positions = {
+  date: {x:520.7,y:687.2},
+  name: {x:247.3,y:638.5},
+  marital: {x:430.7,y:638.5},
+  age: {x:496.7,y:637.5},
+  sex: {x:552.7,y:636.9},
+  occupation: {x:252.7,y:620.2},
+  education: {x:475.3,y:620.2},
+  subtotal: {x:350.7,y:84.2},
+  bubbles: {
+    1:[512.5,499.2,485.9,472.5],
+    2:[435.9,422.5,401.2,387.2],
+    3:[341.2,328.5,316.5,303.2],
+    4:[268.5,244.5,231.9,209.2],
+    5:[164.5,151.2,129.2,114.5],
+    6:[512.5,500.5,486.5,473.2],
+    7:[437.9,423.2,410.5,397.9],
+    8:[362.5,348.5,334.5,322.5],
+    9:[287.9,274.5,251.9,237.9],
+    10:[203.2,189.2,177.2,163.2]
+  },
+  leftX:138.0,
+  rightX:362.0
+};
+const page2Positions = {
+  subtotal: {x:350,y:100.2},
+  subtotal1: {x:350,y:85.2},
+  totalScore: {x:350,y:67.9},
+  leftX:136.0,
+  rightX:355.0,
+  bubbles:{
+	11:[667.7,654.6,642.5,619.9],
+	12:[576.5,553.9,532.6,511.4],
+	13:[477.3,462.8,441.4,418.7],
+	14:[384.8,370.9,350.2,328.2],
+	15:[294.2,281.6,269.6,256.2],
+	16:[222.2,199.6,184.9,172.9,160.2,147.6,134.9],
+	17:[667.8,655.1,642.5,629.3],
+	18:[595.2,572.0,559.3,547.9,534.6,520.7,508.0],
+	19:[474.0,461.3,448.1,426.8],
+	20:[392.7,378.7,356.8,334.1],
+	21:[290.8,270.2,257.6,244.2]
+  }
+};
+const page3Positions = {
+  cols: [260.8,343.4,438.1,516.8],
+  rows: [566.3,544.1,521.6,500.9,480.9,458.3,437.7,415.7,396.9,373.0,352.4,331.7,311.1,289.9,267.9,248.6,225.2,204.6,183.9,162.6,139.9],
+  tallyY: 117.9,
+  totalBox: {x:393.1,y:57.6}
+};
+
+/* ======= UI refs ======= */
+const tabBDI = document.getElementById('tabBDI');
+const tabBAI = document.getElementById('tabBAI');
+const panelBDI = document.getElementById('panelBDI');
+const panelBAI = document.getElementById('panelBAI');
+const qAreaBDI = document.getElementById('qAreaBDI');
+const qAreaBAI = document.getElementById('qAreaBAI');
+const bdiBar = document.getElementById('bdiBar');
+const baiBar = document.getElementById('baiBar');
+const generateBtn = document.getElementById('generateBtn');
+const chooseBtn = document.getElementById('chooseTemplateBtn');
+const templateNameSpan = document.getElementById('templateName');
+
+tabBDI.addEventListener('click', ()=> switchTab('BDI'));
+tabBAI.addEventListener('click', ()=> { if(!tabBAI.classList.contains('locked')) switchTab('BAI'); });
+
+function switchTab(name){
+  if(name==='BDI'){ tabBDI.classList.add('active'); tabBAI.classList.remove('active'); panelBDI.style.display='block'; panelBAI.style.display='none'; }
+  else { tabBAI.classList.add('active'); tabBDI.classList.remove('active'); panelBDI.style.display='none'; panelBAI.style.display='block'; }
+}
+
+/* ======= template picker ======= */
+const fileInput = document.createElement('input');
+fileInput.type='file';
+fileInput.accept='application/pdf';
+fileInput.style.display='none';
+fileInput.addEventListener('change', async(e)=> {
+  const f = e.target.files && e.target.files[0];
+  if(!f) return;
+  templateFilename = f.name;
+  templateNameSpan.textContent = templateFilename;
+  templateArrayBuffer = await f.arrayBuffer();
+  updateGenerateState();
+});
+document.body.appendChild(fileInput);
+chooseBtn.addEventListener('click', ()=> fileInput.click());
+
+/* ======= render logic ======= */
+function render(){
+  // sync header
+  answers.fields.name = (document.getElementById('nameField').value||'').trim();
+  answers.fields.age = document.getElementById('ageField').value||'';
+  answers.fields.sex = document.getElementById('sexField').value||'';
+  answers.fields.marital = document.getElementById('maritalField').value||'';
+  answers.fields.occupation = document.getElementById('occupationField').value||'';
+  answers.fields.education = document.getElementById('educationField').value||'';
+
+  // BDI flow
+  if(step >=1 && step <= bdi1.length){
+    switchTab('BDI');
+    const q = bdi1[step-1];
+    qAreaBDI.innerHTML = renderQuestion(q,'page1');
+    document.getElementById('prevBDI').classList.toggle('hidden', step===1);
+    wireBDI(q,'page1');
+  } else if(step > bdi1.length && step <= bdiCount){
+    switchTab('BDI');
+    const idx = step - (bdi1.length+1);
+    const q = bdi2[idx];
+    qAreaBDI.innerHTML = renderQuestion(q,'page2');
+    document.getElementById('prevBDI').classList.remove('hidden');
+    wireBDI(q,'page2');
+  } else {
+    // BAI one-by-one
+    const baiStart = bdiCount + 1;
+    const idx = step - baiStart;
+    if(idx >= 0 && idx < baiCount){
+      switchTab('BAI');
+      qAreaBAI.innerHTML = renderBAIQuestion(idx);
+      document.getElementById('prevBAI').classList.toggle('hidden', idx===0);
+      wireBAI(idx);
+    } else {
+      switchTab('BAI');
+      qAreaBAI.innerHTML = '<div class="qtitle">BAI complete — ready to generate report.</div><div class="small">Click Generate Report when ready.</div>';
+      document.getElementById('prevBAI').classList.remove('hidden');
+    }
+  }
+
+  updateProgressBars();
+  updateTotals();
+  updateGenerateState();
+}
+
+function renderQuestion(q, section){
+  const stored = (section==='page1') ? answers.page1[q.id] : answers.page2[q.id];
+  return `<div class="qtitle">${q.id}. ${q.text}</div>
+    <div class="options">
+      ${q.opts.map((o,i)=>`<div><label><input type="radio" name="opt" value="${i}" ${stored && stored.choiceIdx===i ? 'checked' : ''}> ${o}</label></div>`).join('')}
+    </div>`;
+}
+function renderBAIQuestion(idx){
+  const stored = answers.page3[idx];
+  return `<div class="qtitle">${idx+1}. ${bai[idx]}</div>
+    <div class="options">
+      ${baiOpts.map((o,i)=>`<div><label><input type="radio" name="baiopt" value="${i}" ${stored===i?'checked':''}> ${i} - ${o}</label></div>`).join('')}
+    </div>`;
+}
+
+/* ======= wiring ======= */
+function wireBDI(q, section){
+  setTimeout(()=> {
+    const nodes = document.getElementsByName('opt');
+    nodes.forEach(n => n.addEventListener('change', e=>{
+      const choice = parseInt(e.target.value);
+      const score = mapSpecial(q.id, choice);
+      const obj = { choiceIdx: choice, score };
+      if(section==='page1') answers.page1[q.id] = obj; else answers.page2[q.id] = obj;
+      if(allBDIAnswered()) tabBAI.classList.remove('locked');
+      updateProgressBars();
+      updateTotals();
+    }));
+  }, 10);
+}
+function wireBAI(idx){
+  setTimeout(()=> {
+    const nodes = document.getElementsByName('baiopt');
+    nodes.forEach(n => n.addEventListener('change', e=>{
+      answers.page3[idx] = parseInt(e.target.value);
+      updateProgressBars();
+      updateTotals();
+      updateGenerateState();
+    }));
+  }, 10);
+}
+
+/* special mapping for q16 & q18 */
+function mapSpecial(qid, optIdx){
+  if(qid===16 || qid===18){
+    if(optIdx===0) return 0;
+    if(optIdx===1||optIdx===2) return 1;
+    if(optIdx===3||optIdx===4) return 2;
+    return 3;
+  }
+  return optIdx;
+}
+
+/* ======= navigation ======= */
+document.getElementById('nextBDI').addEventListener('click', ()=> {
+  if(!validateCurrent()) return;
+  if(step < bdiCount) step++;
+  else step = bdiCount + 1;
+  render();
+});
+document.getElementById('prevBDI').addEventListener('click', ()=> { if(step>1){ step--; render(); } });
+
+document.getElementById('nextBAI').addEventListener('click', ()=> {
+  if(!validateCurrent()) return;
+  const start = bdiCount + 1;
+  if(step < start + baiCount -1) step++;
+  else step = start + baiCount;
+  render();
+});
+document.getElementById('prevBAI').addEventListener('click', ()=> {
+  const start = bdiCount + 1;
+  if(step > start) step--;
+  else step = bdiCount;
+  render();
+});
+
+/* ======= validation, progress, totals ======= */
+function validateCurrent(){
+  if(!answers.fields.name){
+    const n = (document.getElementById('nameField').value||'').trim();
+    if(!n){ alert('Enter Name (used for filename).'); return false; }
+    answers.fields.name = n;
+  }
+  if(step >=1 && step <= bdi1.length){
+    if(!answers.page1[bdi1[step-1].id]){ alert('Please answer this question.'); return false; }
+  } else if(step > bdi1.length && step <= bdiCount){
+    const idx = step - (bdi1.length+1);
+    if(!answers.page2[bdi2[idx].id]){ alert('Please answer this question.'); return false; }
+  } else {
+    const start = bdiCount + 1;
+    const idx = step - start;
+    if(idx >=0 && idx < baiCount){
+      if(answers.page3[idx]===null || answers.page3[idx]===undefined){ alert('Please answer this symptom.'); return false; }
+    }
+  }
+  return true;
+}
+function updateProgressBars(){
+  const answeredBDI = Object.keys(answers.page1).length + Object.keys(answers.page2).length;
+  const pctBDI = Math.round((answeredBDI / bdiCount) * 100);
+  bdiBar.style.width = pctBDI + '%';
+  const answeredBAI = answers.page3.filter(v => v !== null && v !== undefined).length;
+  const pctBAI = Math.round((answeredBAI / baiCount) * 100);
+  baiBar.style.width = pctBAI + '%';
+}
+function updateTotals(){
+  const p1sub = Object.keys(answers.page1).reduce((s,k)=> s + (answers.page1[k]?answers.page1[k].score:0),0);
+  const p2sub = Object.keys(answers.page2).reduce((s,k)=> s + (answers.page2[k]?answers.page2[k].score:0),0);
+  document.getElementById('p1sub').textContent = p1sub;
+  document.getElementById('p2sub').textContent = p2sub;
+  const cols = [0,0,0,0];
+  answers.page3.forEach(sel => { if(sel!==null && sel!==undefined) cols[sel] += sel; });
+  document.getElementById('mildT').textContent = cols[1] || 0;
+  document.getElementById('modT').textContent = cols[2] || 0;
+  document.getElementById('sevT').textContent = cols[3] || 0;
+  document.getElementById('gT').textContent = cols.reduce((a,b)=>a+b,0);
+}
+function updateGenerateState(){
+  const allAnswered = allBDIAnswered() && answers.page3.every(v=> v!==null && v!==undefined);
+  generateBtn.disabled = !(allAnswered && templateArrayBuffer);
+  if(allBDIAnswered()) tabBAI.classList.remove('locked');
+}
+
+/* ======= PDF overlay (pdf-lib) ======= */
+function drawCenteredText(page, font, text, centerX, centerY, size=12){
+  const textWidth = font.widthOfTextAtSize(text, size);
+  const x = centerX - textWidth/2;
+  const y = centerY - (size * 0.33);
+  page.drawText(text, { x, y, size, font });
+}
+generateBtn.addEventListener('click', async ()=>{
+  if(!allBDIAnswered()){ alert('Complete all BDI questions.'); switchTab('BDI'); return; }
+  if(answers.page3.some(v=> v===null || v===undefined)){ alert('Complete all BAI symptoms.'); switchTab('BAI'); return; }
+  if(!templateArrayBuffer){ alert('Select template PDF'); return; }
+  // sync header
+  answers.fields.name = (document.getElementById('nameField').value||'').trim();
+  answers.fields.age = document.getElementById('ageField').value||'';
+  answers.fields.sex = document.getElementById('sexField').value||'';
+  answers.fields.marital = document.getElementById('maritalField').value||'';
+  answers.fields.occupation = document.getElementById('occupationField').value||'';
+  answers.fields.education = document.getElementById('educationField').value||'';
+
+  const { PDFDocument, StandardFonts } = PDFLib;
+  const pdfDoc = await PDFDocument.load(templateArrayBuffer);
+  const helv = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const p1 = pdfDoc.getPage(0);
+  const p2 = pdfDoc.getPage(1);
+  const p3 = pdfDoc.getPage(2);
+
+  // header fields
+  drawCenteredText(p1, helv, answers.fields.name||'', page1Positions.name.x, page1Positions.name.y, 12);
+  drawCenteredText(p1, helv, String(answers.fields.age||''), page1Positions.age.x, page1Positions.age.y, 12);
+  drawCenteredText(p1, helv, answers.fields.marital||'', page1Positions.marital.x, page1Positions.marital.y, 12);
+  drawCenteredText(p1, helv, answers.fields.sex||'', page1Positions.sex.x, page1Positions.sex.y, 12);
+  drawCenteredText(p1, helv, answers.fields.occupation||'', page1Positions.occupation.x, page1Positions.occupation.y, 12);
+  drawCenteredText(p1, helv, answers.fields.education||'', page1Positions.education.x, page1Positions.education.y, 12);
+  const today = (new Date()).toLocaleDateString();
+  drawCenteredText(p1, helv, today, page1Positions.date.x, page1Positions.date.y, 10);
+
+  // helper
+  function drawO(pg, cx, cy){ drawCenteredText(pg, helv, "O", cx, cy, 12); }
+  function drawX(pg, cx, cy){ drawCenteredText(pg, helv, "X", cx, cy, 12); }
+
+  // Page1 bubbles
+  Object.entries(page1Positions.bubbles).forEach(([qid, ys])=>{
+    const q = Number(qid);
+    const entry = answers.page1[q];
+    if(!entry) return;
+    const choiceIdx = entry.choiceIdx;
+    const cx = (q <=5) ? page1Positions.leftX : page1Positions.rightX;
+    const cy = ys[choiceIdx];
+    drawO(p1, cx, cy);
+  });
+  const p1sub = Object.keys(answers.page1).reduce((s,k)=> s + (answers.page1[k]?answers.page1[k].score:0),0);
+  drawCenteredText(p1, helv, String(p1sub), page1Positions.subtotal.x, page1Positions.subtotal.y, 12);
+
+  // Page2 bubbles
+  Object.entries(page2Positions.bubbles).forEach(([qid, ys])=>{
+    const q = Number(qid);
+    const entry = answers.page2[q];
+    if(!entry) return;
+    const choiceIdx = entry.choiceIdx;
+    const cx = (q <=16) ? page2Positions.leftX : page2Positions.rightX;
+    const idx = Math.min(choiceIdx, ys.length-1);
+    const cy = ys[idx];
+    drawO(p2, cx, cy);
+  });
+  const p2sub = Object.keys(answers.page2).reduce((s,k)=> s + (answers.page2[k]?answers.page2[k].score:0),0);
+  drawCenteredText(p2, helv, String(p2sub), page2Positions.subtotal.x, page2Positions.subtotal.y, 12);
+  drawCenteredText(p2, helv, String(p1sub), page2Positions.subtotal1.x, page2Positions.subtotal1.y, 12);
+  drawCenteredText(p2, helv, String(p1sub + p2sub), page2Positions.totalScore.x, page2Positions.totalScore.y, 12);
+
+  // Page3 X marks
+  answers.page3.forEach((sel, idx)=>{
+    if(sel===null || sel===undefined) return;
+    const cx = page3Positions.cols[sel];
+    const cy = page3Positions.rows[idx];
+    drawX(p3, cx, cy);
+  });
+  // column totals
+  const colTotals = [0,0,0,0];
+  answers.page3.forEach(sel=>{ if(sel>=0) colTotals[sel] += sel; });
+  page3Positions.cols.forEach((cx,i)=> drawCenteredText(p3, helv, String(colTotals[i]||0), cx, page3Positions.tallyY, 12));
+  drawCenteredText(p3, helv, String(colTotals.reduce((a,b)=>a+b,0)), page3Positions.totalBox.x, page3Positions.totalBox.y, 12);
+
+  const pdfBytes = await pdfDoc.save();
+  const blob = new Blob([pdfBytes], { type:'application/pdf' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (answers.fields.name || 'Report') + ' - BECKS Report.pdf';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
+});
+
+/* ======= helpers ======= */
+function allBDIAnswered(){ return bdi1.every(q=>answers.page1[q.id]) && bdi2.every(q=>answers.page2[q.id]); }
+
+/* ======= init ======= */
+window.addEventListener('load', ()=> { 
+  render();
+  // try to autoload server template if present
+  // host may transform SERVER_TEMPLATE_PATH to accessible URL
+  // do not block if fails
+  fetch(SERVER_TEMPLATE_PATH).then(r=> {
+    if(r.ok) return r.arrayBuffer();
+    throw new Error('no server template');
+  }).then(buf=> {
+    templateArrayBuffer = buf;
+    templateFilename = SERVER_TEMPLATE_PATH.split('/').pop();
+    templateNameSpan.textContent = templateFilename + ' (auto)';
+    updateGenerateState();
+  }).catch(()=>{/* ignore */});
+});
+</script>
+</body>
+</html>

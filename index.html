@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="icon" type="image/png" href="favicon.png">
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>BECKS — BDI & BAI</title>
+<title>BECKS BDI & BAI</title>
 <style>
   :root{--bg:#f6f8fb;--card:#fff;--accent:#0b6fa6;--muted:#6b7280}
   body{font-family:system-ui,Segoe UI,Roboto,Arial;font-size: 1.5rem; background:var(--bg);margin:0;padding:20px;color:#0f172a}
@@ -16,7 +17,7 @@
   .tab.locked{opacity:.45;cursor:not-allowed}
   .panel{border:1px solid #e6edf3;padding:14px;border-radius:8px;background:#fff}
   .qArea{font-size:2rem}
-  .option-row{display:grid;grid-template-columns:24px 1fr;gap:24px;padding-left:24px}
+  .option-row{display:grid;grid-template-columns:24px 1fr;gap:40px;padding-left:24px}
   .option-row input[type="radio"]{align-self:start;position:relative;top:0.8rem;transform: scale(1.6);accent-color: var(--accent)}
   .qtitle{font-weight:700;margin-bottom:8px}
   .options div{margin:8px 0}
@@ -27,7 +28,7 @@
   .bar{height:100%;background:var(--accent);width:0}
   .small{font-size:13px;color:var(--muted)}
   .hidden{display:none !important}
-  footer{margin-top:12px;font-size:13px;color:var(--muted)}
+  footer{margin-top:12px;font-size:13px;color:var(--muted);align-self:end}
   table{width:100%;border-collapse:collapse;margin-top:6px}
   .instruction{font-size: 1rem; margin:1rem 1rem 4rem 1rem;}
   #preloader{position:fixed;inset:0;background:#ffffff;display:flex;align-items:center;justify-content:center;z-index:9999;}
@@ -48,7 +49,7 @@
   <h2 style="margin:0 0 8px 0;font-size:1rem">BDI/BAI</h2>
   <div style="display:flex;align-items:center;margin-bottom:1rem;color:red;">
     <button id="chooseTemplateBtn" class="btn ghost">Choose template PDF</button>
-    <span id="templateName" class="small" style="color:green;min-width:200px;display:inline-block"></span>
+    <span id="templateName" class="small" style="color:green;min-width:200px;display:inline-block;padding-left:1rem"></span>
   </div>
   <div style="transition:max-height 0.3s ease;" id="panel">
     <div class="header-row">
@@ -85,7 +86,7 @@
   </div>
 
   <div id="panelBDI" class="panel" style="margin-top:12px">
-    <div class="instruction"><b>Instructions:</b> Click one statement that best describes the way you have been feeling during the past two weeks, including today.</div>
+    <div class="instruction"><b>Instructions:</b> Pick one statement that best describes the way you have been feeling during the past two weeks, including today.</div>
     <div class="qArea" id="qAreaBDI"></div>
     <div class="nav">
       <button id="prevBDI" class="btn ghost hidden">Previous</button>
@@ -96,7 +97,7 @@
   </div>
 
   <div id="panelBAI" class="panel" style="margin-top:12px;display:none">
-    <div class="instruction"><b>Instruction:</b> Indicate how much you have been bothered by the following symptoms for the past week.</div>
+    <div class="instruction">Instruction: Indicate how much you have been bothered by the following symptoms for the past week.</div>
     <div class="qArea" id="qAreaBAI"></div>
     <div class="nav">
       <button id="prevBAI" class="btn ghost hidden">Previous</button>
@@ -110,7 +111,7 @@
     <button id="generateBtn" class="btn" disabled>Generate</button>
   </div>
 
-  <footer>Tip: choose template once, complete BDI then BAI, then Generate PDF.</footer>
+  <footer>  </footer>
 </div>
 
 <script>
@@ -554,7 +555,7 @@ generateBtn.addEventListener('click', async ()=>{
   const blob = new Blob([pdfBytes], { type:'application/pdf' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = (answers.fields.name || 'Report') + ' - BECKS Report.pdf';
+  a.download = (answers.fields.name || 'Report') + ' - BECKS.pdf';
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
@@ -565,18 +566,18 @@ function allBDIAnswered(){ return bdi1.every(q=>answers.page1[q.id]) && bdi2.eve
 /* ======= init ======= */
 window.addEventListener('load', ()=> { 
   render();
-  // try to autoload server template if present
-  // host may transform SERVER_TEMPLATE_PATH to accessible URL
-  // do not block if fails
-  fetch(SERVER_TEMPLATE_PATH).then(r=> {
-    if(r.ok) return r.arrayBuffer();
-    throw new Error('no server template');
-  }).then(buf=> {
+  fetch('template.pdf')
+  .then(r => {
+    if (!r.ok) throw new Error("template.pdf not found");
+    return r.arrayBuffer();
+  })
+  .then(buf => {
     templateArrayBuffer = buf;
-    templateFilename = SERVER_TEMPLATE_PATH.split('/').pop();
-    templateNameSpan.textContent = templateFilename + ' (auto)';
+    templateFilename = "template.pdf";
+    templateNameSpan.textContent = "template.pdf (auto)";
     updateGenerateState();
-  }).catch(()=>{/* ignore */});
+  })
+  .catch(err => console.warn("Could not auto-load template.pdf:", err));
 });
 </script>
 </body>

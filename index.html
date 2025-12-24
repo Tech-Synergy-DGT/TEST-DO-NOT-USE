@@ -481,7 +481,7 @@ generateBtn2.addEventListener('click', async ()=>{
   const date = `${mm}-${dd}-${yy}`;
 
   const safe = s => s.replace(/[\\/:*?"<>|]/g, '');
-  const filename = `${safe(name)} BA${baiScore} BD${bdiScore} - Dr. ${safe(doctor)} - ${safe(date)}.docx`;
+  const filename = `${safe(name)} BA${baiScore} BD${bdiScore} - Dr. ${safe(doctor)}.docx`;
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

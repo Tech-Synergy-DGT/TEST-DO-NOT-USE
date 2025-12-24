@@ -43,9 +43,9 @@
 <body>
 <div class="wrap">
   <h2 style="margin:0 0 8px 0;font-size:1rem">BDI/BAI</h2>
-  <p style="margin:0;font-size:1rem;">Doctor's Name:</p>
   <div class="header-row">
-    <input style="flex:54" id="doctorField" type="text" placeholder="Doctor"/>
+    <p>Dr. </p><input style="flex:54" id="doctorField" type="text" placeholder="Doctor"/>
+    <p>Evaluation Date: </p><input style="flex:54" id="evalDate" type="text" placeholder = Evaluation Date"/>
     <div style="flex:100"></div>
   </div>
   <div style="display:flex;align-items:center;margin-bottom:1rem;color:red;">
@@ -178,6 +178,7 @@ function render(){
   answers.fields.occupation = (document.getElementById('occupationField').value||'');
   answers.fields.education = (document.getElementById('educationField').value||'');
   answers.fields.doctor = (document.getElementById('doctorField').value||'').trim();
+  answers.fields.evalDate = (document.getelementById('evalDate').value||'');
 
   // BDI flow
   if(step >=1 && step <= bdi1.length){
@@ -474,14 +475,14 @@ generateBtn2.addEventListener('click', async ()=>{
 
   const name = answers.fields.name || "Unknown";
   const doctor = answers.fields.doctor || "Unknown";
-  const d = new Date();
+  const d = answers.fields.evalDate || "";
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
   const yy = String(d.getFullYear()).slice(-2);
   const date = `${mm}-${dd}-${yy}`;
 
   const safe = s => s.replace(/[\\/:*?"<>|]/g, '');
-  const filename = `${safe(name)} BA${baiScore} BD${bdiScore} - Dr. ${safe(doctor)}.docx`;
+  const filename = `${safe(name)} BA${baiScore} BD${bdiScore} - Dr. ${safe(doctor)} - ${safe(date)}.docx`;
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

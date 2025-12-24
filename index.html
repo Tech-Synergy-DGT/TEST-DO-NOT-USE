@@ -474,9 +474,10 @@ generateBtn2.addEventListener('click', async ()=>{
 
   const name = answers.fields.name || "Unknown";
   const doctor = answers.fields.doctor || "Unknown";
+  const date = new Date().toLocaleDateString();
 
   const safe = s => s.replace(/[\\/:*?"<>|]/g, '');
-  const filename = `${safe(name)} BA${baiScore} BD${bdiScore} - Dr. ${safe(doctor)}.docx`;
+  const filename = `${safe(name)} BA${baiScore} BD${bdiScore} - Dr. ${safe(doctor)} - ${safe(date)}.docx`;
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

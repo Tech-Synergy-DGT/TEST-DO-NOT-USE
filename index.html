@@ -663,6 +663,24 @@ async function generateWordReport(){
   const bai = getBAISeverity(baiScore);
 
 const doc = new Document({
+    styles: {
+    paragraphStyles: [
+      {
+        id: "JustifiedBody",
+        name: "Justified Body",
+        basedOn: "Normal",
+        next: "Normal",
+        quickFormat: true,
+        run: {
+          size: 26
+        },
+        paragraph: {
+          alignment: AlignmentType.JUSTIFIED,
+          spacing: { after: 200 }
+        }
+      }
+    ]
+  },
   sections: [{
     children: [
       // Title

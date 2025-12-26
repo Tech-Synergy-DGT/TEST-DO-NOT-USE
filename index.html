@@ -655,7 +655,7 @@ async function generateWordReport(){
     return null;
   }
 
-  const { Document, Packer, Paragraph, TextRun } = docx;
+  const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
 
   const bdiScore = computeBDIScore();
   const baiScore = computeBAIScore();
@@ -688,7 +688,7 @@ const doc = new Document({
       new Paragraph({
         children: [new TextRun({ 
           text: "The Beck Anxiety Inventory is a 21-question self-report inventory which asks the applicant to choose from a hierarchy of levels of anxiety-related symptomatology for each question. This is a self-rating device to delineate the nature, intensity and frequency of anxiety-related symptomatology. Each question is scored from zero to three, with a maximum score of 63 for the test. The higher the score the higher the self-rating by the applicant as a measure of anxiety-related symptoms.", 
-          alignment: "both",
+          alignment: AlignmentType.JUSTIFIED,
           size: 26 
         })]
       }),
@@ -732,7 +732,7 @@ const doc = new Document({
         children: [new TextRun({
           text: "The Beck Depression Inventory (BDI) is a 21-question self-report inventory which asks the applicant to choose from a hierarchy of levels of depressive symptomatology for each question. This is a self-rating device to delineate the nature, intensity and frequency of depressive symptomatology. Each question is scored from zero to three, with maximum score of 63 for the test. The higher the score, the higher self-rating by the applicant as a measure of depressive symptoms.",
           size: 26,
-          alignment: "both:"
+          alignment: AlignmentType.JUSTIFIED
         })]
       }),
 

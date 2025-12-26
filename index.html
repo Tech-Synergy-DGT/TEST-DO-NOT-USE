@@ -112,8 +112,8 @@
   </div>
 
   <div style="margin-top:12px;display:flex;gap:10px">
-    <button id="generateBtn" class="btn" disabled>Generate Form (PDF)</button>
-    <button id="generateBtn2" class="btn" type="button" disabled>Generate Report (Word)</button>
+    <button id="generateBtn" class="btn hidden" type="button" disabled>Generate Form (PDF)</button>
+    <button id="generateBtn2" class="btn hidden" type="button" disabled>Generate Report (Word)</button>
   </div>
 
   <footer>  </footer>
@@ -282,17 +282,6 @@ fileInput.addEventListener('change', async(e)=> {
 document.body.appendChild(fileInput);
 chooseBtn.addEventListener('click', ()=> fileInput.click());
 
-/* ======= render logic ======= */
-window.addEventListener("load", function () {
-    const loader = document.getElementById("preloader");
-    loader.style.opacity = "0";
-
-    // Optional: fade out
-    setTimeout(() => {
-      loader.style.display = "none";
-    }, 300);
-  });
-	
 function render(){
   // sync header
   answers.fields.name = (document.getElementById('nameField').value||'').trim();
@@ -474,8 +463,14 @@ function updateTotals(){
 }
 function updateGenerateState(){
   const allAnswered = allBDIAnswered() && answers.page3.every(v=> v!==null && v!==undefined);
-  generateBtn.disabled  = !(allAnswered && templateArrayBuffer);
+
+  const pdfReady = allAnswered && !!templateArrayBuffer;
+  generateBtn.classList.toggle('hidden', !pdfReady);
+  generateBtn.disabled  = !pdfReady;
+
+  generateBtn2.classList.toggle('hidden', !allAnswered);
   generateBtn2.disabled = !allAnswered;
+
   if(allBDIAnswered()) tabBAI.classList.remove('locked');
 }
 
@@ -816,8 +811,6 @@ async function generateWordReport(){
 
   return await Packer.toBlob(doc);
 }
-
-
 </script>
 </body>
 </html>

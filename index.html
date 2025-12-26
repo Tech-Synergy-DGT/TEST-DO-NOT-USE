@@ -31,22 +31,20 @@
   footer{margin-top:12px;font-size:13px;color:var(--muted);align-self:end}
   table{width:100%;border-collapse:collapse;margin-top:6px}
   .instruction{font-size: 1rem; margin:1rem 1rem 4rem 1rem;}
-  #preloader{position:fixed;inset:0;background:#ffffff;display:flex;align-items:center;justify-content:center;z-index:9999;}
-  .spinner{width:60px;height:60px;border:6px solid#ddd;border-top-color:#3498db;border-radius:50%;animation:spin 0.8 slinear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
   .option-row{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:flex-start;margin:6px 0}
   .option-row input[type="radio"]{margin-top:4px}
 </style>
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
 </head>
-<div id="preloader">
-  <div class="spinner"></div>
-</div>
 <body>
 <div class="wrap">
   <h2 style="margin:0 0 8px 0;font-size:1rem">BDI/BAI</h2>
-  <p style="margin:0;font-size:1rem;">Doctor's Name:</p>
+  <p style="margin:0;font-size:1rem;">Evaluation Date:</p>
+  <div class="header-row">
+	<input style="flex:54" id="evalDate" type="text" placeholder="MM-DD-YY"/>
+    <div style="flex:100"></div>
+  </div>
   <div class="header-row">
 	<input style="flex:54" id="doctorField" type="text" placeholder="Doctor"/>
     <div style="flex:100"></div>
@@ -479,8 +477,6 @@ function updateGenerateState(){
 }
 
 /* ======= PDF overlay (pdf-lib) ======= */
-const totalBDI = computeBDIScore();
-
 function drawCenteredText(page, font, text, centerX, centerY, size=12){
   const textWidth = font.widthOfTextAtSize(text, size);
   const x = centerX - textWidth/2;
@@ -709,19 +705,19 @@ async function generateWordReport(){
 
         // BAI Severity lines
         new Paragraph({
-          children: [new TextRun({ text: "0–7\t\t Minimal Anxiety", bold: baiScore <= 7, size: 26 })],
+          children: [new TextRun({ text: "0–7\t\tMinimal Anxiety", bold: baiScore <= 7, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "8–15\t\t Mild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
+          children: [new TextRun({ text: "8–15\t\tMild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "16–25\t\t Moderate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
+          children: [new TextRun({ text: "16–25\t\tModerate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "26+\t\t Severe Anxiety", bold: baiScore >= 26, size: 26 })],
+          children: [new TextRun({ text: "26+\t\tSevere Anxiety", bold: baiScore >= 26, size: 26 })],
           indent: { left: 2880 }
         }),
 
@@ -750,19 +746,19 @@ async function generateWordReport(){
 
         // BDI Severity lines
         new Paragraph({
-          children: [new TextRun({ text: "0–9\t\t Minimal Depression", bold: bdiScore <= 9, size: 26 })],
+          children: [new TextRun({ text: "0–9\t\tMinimal Depression", bold: bdiScore <= 9, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "10–18\t\t Mild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
+          children: [new TextRun({ text: "10–18\t\tMild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "19–29\t\t Moderate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
+          children: [new TextRun({ text: "19–29\t\tModerate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "30+\t\t Severe Depression", bold: bdiScore >= 30, size: 26 })],
+          children: [new TextRun({ text: "30+\t\tSevere Depression", bold: bdiScore >= 30, size: 26 })],
           indent: { left: 2880 }
         }),
 

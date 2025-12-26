@@ -709,19 +709,19 @@ async function generateWordReport(){
 
         // BAI Severity lines
         new Paragraph({
-          children: [new TextRun({ text: "0–7 Minimal Anxiety", bold: baiScore <= 7, size: 26 })],
+          children: [new TextRun({ text: "0–7\t Minimal Anxiety", bold: baiScore <= 7, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "8–15 Mild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
+          children: [new TextRun({ text: "8–15\t Mild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "16–25 Moderate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
+          children: [new TextRun({ text: "16–25\t Moderate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "26+ Severe Anxiety", bold: baiScore >= 26, size: 26 })],
+          children: [new TextRun({ text: "26+\t Severe Anxiety", bold: baiScore >= 26, size: 26 })],
           indent: { left: 2880 }
         }),
 
@@ -750,19 +750,19 @@ async function generateWordReport(){
 
         // BDI Severity lines
         new Paragraph({
-          children: [new TextRun({ text: "0–9 Minimal Depression", bold: bdiScore <= 9, size: 26 })],
+          children: [new TextRun({ text: "0–9\t Minimal Depression", bold: bdiScore <= 9, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "10–18 Mild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
+          children: [new TextRun({ text: "10–18\t Mild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "19–29 Moderate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
+          children: [new TextRun({ text: "19–29\t Moderate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "30+ Severe Depression", bold: bdiScore >= 30, size: 26 })],
+          children: [new TextRun({ text: "30+\t Severe Depression", bold: bdiScore >= 30, size: 26 })],
           indent: { left: 2880 }
         }),
 

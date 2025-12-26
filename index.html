@@ -672,7 +672,7 @@ async function generateWordReport(){
           next: "Normal",
           quickFormat: true,
           run: { size: 26 },
-          paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 200 } }
+          paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 0 } }
         }
       ]
     },
@@ -685,7 +685,7 @@ async function generateWordReport(){
         }),
 
         // Spacer
-        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
 
         // BAI Heading
         new Paragraph({
@@ -694,7 +694,7 @@ async function generateWordReport(){
         }),
 
         // Spacer
-        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
 
         // BAI Description
         new Paragraph({
@@ -705,7 +705,7 @@ async function generateWordReport(){
         }),
 
         // Spacer
-        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
 
         // BAI Severity lines
         new Paragraph({
@@ -726,7 +726,7 @@ async function generateWordReport(){
         }),
 
         // Spacer
-        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
 
         // BDI Heading
         new Paragraph({
@@ -735,7 +735,7 @@ async function generateWordReport(){
         }),
 
         // Spacer
-        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
 
         // BDI Description
         new Paragraph({
@@ -746,7 +746,7 @@ async function generateWordReport(){
         }),
 
         // Spacer
-        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
 
         // BDI Severity lines
         new Paragraph({
@@ -767,7 +767,7 @@ async function generateWordReport(){
         }),
 
         // Final Spacer
-        new Paragraph({ children: [new TextRun({ text: "" })] })
+        new Paragraph({ children: [new TextRun({ text: "\u00A0", size: 26 })] }),
       ]
     }]
   });

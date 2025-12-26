@@ -662,125 +662,115 @@ async function generateWordReport(){
   const bdi = getBDISeverity(bdiScore);
   const bai = getBAISeverity(baiScore);
 
-const doc = new Document({
+  const doc = new Document({
     styles: {
-    paragraphStyles: [
-      {
-        id: "JustifiedBody",
-        name: "Justified Body",
-        basedOn: "Normal",
-        next: "Normal",
-        quickFormat: true,
-        run: {
-          size: 26
-        },
-        paragraph: {
-          alignment: AlignmentType.JUSTIFIED,
-          spacing: { after: 200 }
+      paragraphStyles: [
+        {
+          id: "JustifiedBody",
+          name: "Justified Body",
+          basedOn: "Normal",
+          next: "Normal",
+          quickFormat: true,
+          run: { size: 26 },
+          paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 200 } }
         }
-      }
-    ]
-  },
-  sections: [{
-    children: [
-      // Title
-      new Paragraph({
-        children: [new TextRun({ text: "PSYCHIATRIC DIAGNOSTIC TESTING", bold: true, underline: true, size: 26 })],
-        alignment: "center"        
-      }),
+      ]
+    },
+    sections: [{
+      children: [
+        // Title
+        new Paragraph({
+          children: [new TextRun({ text: "PSYCHIATRIC DIAGNOSTIC TESTING", bold: true, underline: true, size: 26 })],
+          alignment: AlignmentType.CENTER
+        }),
 
-      // Spacer
-      new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
 
-      // BAI Heading
-      new Paragraph({
-        children: [new TextRun({ text: `BECK ANXIETY INVENTORY: ${baiScore} – ${bai.label}`, bold: true, size: 26 })],
-        alignment: "center"
-      }),
+        // BAI Heading
+        new Paragraph({
+          children: [new TextRun({ text: `BECK ANXIETY INVENTORY: ${baiScore} – ${bai.label}`, bold: true, size: 26 })],
+          alignment: AlignmentType.CENTER
+        }),
 
-      // Spacer
-      new Paragraph({ children: [new TextRun({ text: "", size: 26 })],
-      }),
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
 
-      // BAI description
-      new Paragraph({
-        children: [new TextRun({ 
-          text: "The Beck Anxiety Inventory is a 21-question self-report inventory which asks the applicant to choose from a hierarchy of levels of anxiety-related symptomatology for each question. This is a self-rating device to delineate the nature, intensity and frequency of anxiety-related symptomatology. Each question is scored from zero to three, with a maximum score of 63 for the test. The higher the score the higher the self-rating by the applicant as a measure of anxiety-related symptoms.", 
+        // BAI Description
+        new Paragraph({
           style: "JustifiedBody",
-          size: 26 
-        })]
-      }),
+          children: [new TextRun({
+            text: "The Beck Anxiety Inventory is a 21-question self-report inventory which asks the applicant to choose from a hierarchy of levels of anxiety-related symptomatology for each question. This is a self-rating device to delineate the nature, intensity and frequency of anxiety-related symptomatology. Each question is scored from zero to three, with a maximum score of 63 for the test. The higher the score the higher the self-rating by the applicant as a measure of anxiety-related symptoms."
+          })]
+        }),
 
-      // Spacer
-      new Paragraph({ children: [new TextRun({ text: "", size: 26 })],
-      }),
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
 
-      // Severity lines
-      new Paragraph({
+        // BAI Severity lines
+        new Paragraph({
           children: [new TextRun({ text: "0–7 Minimal Anxiety", bold: baiScore <= 7, size: 26 })],
-          indent: { left: 2880 } // 2 inches
-      }),
-      new Paragraph({
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
           children: [new TextRun({ text: "8–15 Mild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
           indent: { left: 2880 }
-      }),
-      new Paragraph({
+        }),
+        new Paragraph({
           children: [new TextRun({ text: "16–25 Moderate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
           indent: { left: 2880 }
-      }),
-      new Paragraph({
+        }),
+        new Paragraph({
           children: [new TextRun({ text: "26+ Severe Anxiety", bold: baiScore >= 26, size: 26 })],
           indent: { left: 2880 }
-      }),
+        }),
 
-      // Spacer
-      new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
 
-      // BDI Heading
-      new Paragraph({
-        children: [new TextRun({ text: `BECK DEPRESSION INVENTORY: ${bdiScore} – ${bdi.label}`, bold: true, size: 26 })],
-        alignment: "center"
-      }),
+        // BDI Heading
+        new Paragraph({
+          children: [new TextRun({ text: `BECK DEPRESSION INVENTORY: ${bdiScore} – ${bdi.label}`, bold: true, size: 26 })],
+          alignment: AlignmentType.CENTER
+        }),
 
-      // Spacer
-      new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
 
-      // BDI description
-      new Paragraph({
-        children: [new TextRun({
-          text: "The Beck Depression Inventory (BDI) is a 21-question self-report inventory which asks the applicant to choose from a hierarchy of levels of depressive symptomatology for each question. This is a self-rating device to delineate the nature, intensity and frequency of depressive symptomatology. Each question is scored from zero to three, with maximum score of 63 for the test. The higher the score, the higher self-rating by the applicant as a measure of depressive symptoms.",
-          size: 26,
-          style: "JustifiedBody"
-        })]
-      }),
+        // BDI Description
+        new Paragraph({
+          style: "JustifiedBody",
+          children: [new TextRun({
+            text: "The Beck Depression Inventory (BDI) is a 21-question self-report inventory which asks the applicant to choose from a hierarchy of levels of depressive symptomatology for each question. This is a self-rating device to delineate the nature, intensity and frequency of depressive symptomatology. Each question is scored from zero to three, with maximum score of 63 for the test. The higher the score, the higher self-rating by the applicant as a measure of depressive symptoms."
+          })]
+        }),
 
-      // Spacer
-      new Paragraph({ children: [new TextRun({ text: "", size: 26 })],
-      }),
+        // Spacer
+        new Paragraph({ children: [new TextRun({ text: "", size: 26 })] }),
 
-      // Severity lines
-      new Paragraph({
-         children: [new TextRun({ text: "0–9 Minimal Depression", bold: bdiScore <= 9, size: 26 })],
-         indent: { left: 2880 }
-      }),
-      new Paragraph({
-         children: [new TextRun({ text: "10–18 Mild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
-         indent: { left: 2880 }
-      }),
-      new Paragraph({
-         children: [new TextRun({ text: "19–29 Moderate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
-         indent: { left: 2880 }
-      }),
-      new Paragraph({
-         children: [new TextRun({ text: "30+ Severe Depression", bold: bdiScore >= 30, size: 26 })],
-         indent: { left: 2880 }
-      }),
-	  // Spacer
-      new Paragraph({ children: [new TextRun({ text: "", size: 26 })],
-      })
-    ]
-  }]
-});
+        // BDI Severity lines
+        new Paragraph({
+          children: [new TextRun({ text: "0–9 Minimal Depression", bold: bdiScore <= 9, size: 26 })],
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "10–18 Mild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "19–29 Moderate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
+          indent: { left: 2880 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "30+ Severe Depression", bold: bdiScore >= 30, size: 26 })],
+          indent: { left: 2880 }
+        }),
+
+        // Final Spacer
+        new Paragraph({ children: [new TextRun({ text: "" })] })
+      ]
+    }]
+  });
 
   return await Packer.toBlob(doc);
 }

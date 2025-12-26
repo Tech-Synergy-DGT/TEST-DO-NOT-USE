@@ -774,6 +774,9 @@ const doc = new Document({
       new Paragraph({
          children: [new TextRun({ text: "30–63 Severe Depression", bold: bdiScore >= 30, size: 26 })],
          indent: { left: 2880 }
+      }),
+	  // Spacer
+      new Paragraph({ children: [new TextRun({ text: "", size: 26 })],
       })
     ]
   }]

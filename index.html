@@ -302,6 +302,8 @@ function render(){
   answers.fields.occupation = document.getElementById('occupationField').value||'';
   answers.fields.education = document.getElementById('educationField').value||'';
   answers.fields.doctor = (document.getElementById('doctorField').value || '').trim();
+  answers.fields.evalDate = (document.getElementById('evalDate').value || '').trim();
+  
 
   // BDI flow
   if(step >=1 && step <= bdi1.length){
@@ -478,6 +480,8 @@ function updateGenerateState(){
 }
 
 /* ======= PDF overlay (pdf-lib) ======= */
+const totalBDI = computeBDIScore();
+
 function drawCenteredText(page, font, text, centerX, centerY, size=12){
   const textWidth = font.widthOfTextAtSize(text, size);
   const x = centerX - textWidth/2;
@@ -565,7 +569,9 @@ generateBtn.addEventListener('click', async ()=>{
   a.href = URL.createObjectURL(blob);
   const patient = answers.fields.name || 'Report';
   const doctor = answers.fields.doctor || '';
-  a.download = `${patient} - BECKS - Dr. ${doctor}.pdf`;
+  const evalDateStr = normalizeDateForFilename(answers.fields.evalDate);
+  const dateSuffix = evalDateStr ? ` - ${evalDateStr}` : '';
+  a.download = `${safeFilename(patient)} - BECKS - Dr. ${safeFilename(doctor)} ${dateSuffix}.pdf`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
@@ -582,8 +588,9 @@ generateBtn2.addEventListener('click', async ()=>{
   const doctor = answers.fields.doctor || "Unknown";
 
   const safe = s => s.replace(/[\\/:*?"<>|]/g,'');
-  const filename =
-    `${safe(name)} - BA${bai} BD${bdi} - Dr. ${safe(doctor)}.docx`;
+  const evalDateStr = normalizeDateForFilename(answers.fields.evalDate || document.getElementById('evalDate').value || '');
+  const dateSuffix = evalDateStr ? ` - ${evalDateStr}` : '';
+  const filename = `${safeFilename(name)} - BA${bai} BD${bdi} - Dr. ${safeFilename(doctor)}${dateSuffix}.docx`;
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -597,6 +604,44 @@ generateBtn2.addEventListener('click', async ()=>{
 
 /* ======= helpers ======= */
 function allBDIAnswered(){ return bdi1.every(q=>answers.page1[q.id]) && bdi2.every(q=>answers.page2[q.id]); }
+
+function safeFilename(s){
+  return (s||'').replace(/[\\/:*?"<>|]/g,'').trim();
+}
+
+function normalizeDateForFilename(input){
+  if(!input) return '';
+  const digits = String(input).replace(/\D/g,'');
+  if(digits.length===8){ // MMDDYYYY
+    const mm = digits.slice(0,2);
+    const dd = digits.slice(2,4);
+    const yyyy = digits.slice(4);
+    return `${mm}-${dd}-${yyyy}`;
+  }
+  if(digits.length===6){ // MMDDYY -> expand to 4-digit year (00-50 => 2000-2050)
+    const mm = digits.slice(0,2);
+    const dd = digits.slice(2,4);
+    const yy = digits.slice(4);
+    const num = parseInt(yy,10);
+    const full = num <= 50 ? 2000 + num : 1900 + num;
+    return `${mm}-${dd}-${full}`;
+  }
+  if(digits.length===4){ // MMDD -> current year
+    const mm = digits.slice(0,2);
+    const dd = digits.slice(2,4);
+    const yyyy = new Date().getFullYear();
+    return `${mm}-${dd}-${yyyy}`;
+  }
+  // fallback: try parsing date string
+  const parsed = new Date(input);
+  if(!isNaN(parsed)){
+    const mm = String(parsed.getMonth()+1).padStart(2,'0');
+    const dd = String(parsed.getDate()).padStart(2,'0');
+    const yyyy = String(parsed.getFullYear());
+    return `${mm}-${dd}-${yyyy}`;
+  }
+  return '';
+}
 
 /* ======= shared scoring (single source of truth) ======= */
 function computeBDIScore(){

@@ -568,7 +568,7 @@ generateBtn.addEventListener('click', async ()=>{
   a.href = URL.createObjectURL(blob);
   const patient = answers.fields.name || 'Report';
   const doctor = answers.fields.doctor || '';
-  a.download = `${patient} BECKS - Dr. ${doctor}.pdf`;
+  a.download = `${patient} - BECKS - Dr. ${doctor}.pdf`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
@@ -586,7 +586,7 @@ generateBtn2.addEventListener('click', async ()=>{
 
   const safe = s => s.replace(/[\\/:*?"<>|]/g,'');
   const filename =
-    `${safe(name)} BA${bai} BD${bdi} - Dr. ${safe(doctor)}.docx`;
+    `${safe(name)} - BA${bai} BD${bdi} - Dr. ${safe(doctor)}.docx`;
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

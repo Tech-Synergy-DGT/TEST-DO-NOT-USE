@@ -77,20 +77,20 @@
     <div id="tabBAI" class="tab locked">BAI</div>
   </div>
 
-  <div style="display:flex;gap:12px;align-items:center">
-    <div style="flex:1">
-      <div class="small">BDI progress</div>
-      <div class="progress"><div id="bdiBar" class="bar"></div></div>
-    </div>
-    <div style="flex:1">
-      <div class="small">BAI progress</div>
-      <div class="progress"><div id="baiBar" class="bar"></div></div>
+  <div id="panelBDI" class="panel" style="margin-top:12px">
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="flex:1">
+        <div class="small">BDI progress</div>
+        <div class="progress"><div id="bdiBar" class="bar"></div></div>
+      </div>
+      <div style="flex:1">
+        <div class="small">BAI progress</div>
+        <div class="progress"><div id="baiBar" class="bar"></div>
+	  </div>
     </div>
     <button class="btn" id="toggleBtn">^ Hide</button>
-  </div>
-
-  <div id="panelBDI" class="panel" style="margin-top:12px">
-    <div class="instruction"><b>Instructions:</b> Pick one statement that best describes the way you have been feeling during the past two weeks, including today.</div>
+    </div>
+	<div class="instruction"><b>Instructions:</b> Pick one statement that best describes the way you have been feeling during the past two weeks, including today.</div>
     <div class="qArea" id="qAreaBDI"></div>
     <div class="nav">
       <button id="prevBDI" class="btn ghost hidden">Previous</button>
@@ -101,7 +101,20 @@
   </div>
 
   <div id="panelBAI" class="panel" style="margin-top:12px;display:none">
-    <div class="instruction">Instruction: Indicate how much you have been bothered by the following symptoms for the past week.</div>
+    <div style="display:flex;gap:12px;align-items:center">
+        <div style="flex:1">
+          <div class="small">BDI progress</div>
+          <div class="progress"><div id="bdiBar" class="bar"></div>
+	    </div>
+      </div>
+      <div style="flex:1">
+        <div class="small">BAI progress</div>
+        <div class="progress"><div id="baiBar" class="bar"></div>
+	  </div>
+    </div>
+    <button class="btn" id="toggleBtn">^ Hide</button>
+    </div>
+	<div class="instruction">Instruction: Indicate how much you have been bothered by the following symptoms for the past week.</div>
     <div class="qArea" id="qAreaBAI"></div>
     <div class="nav">
       <button id="prevBAI" class="btn ghost hidden">Previous</button>

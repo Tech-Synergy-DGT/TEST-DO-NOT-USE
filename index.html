@@ -7,16 +7,16 @@
 <title>BECKS BDI & BAI</title>
 <style>
   :root{--bg:#f6f8fb;--card:#fff;--accent:#0b6fa6;--muted:#6b7280}
-  body{font-family:system-ui,Segoe UI,Roboto,Arial;font-size: 1.5rem; background:var(--bg);margin:0;padding:20px;color:#0f172a}
-  .wrap{max-width:980px;margin:18px auto;background:var(--card);border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;font-size: 1.5rem; background:var(--bg);margin:0;color:#0f172a}
+  .wrap{max-width:980px;margin:0 auto;background:var(--card);border-radius:10px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
   .header-row{display:flex;gap:12px;margin-bottom:12px}
   input[type="text"],input[type="number"],select{padding:8px;border:1px solid #e6edf3;border-radius:8px;width:100%}
-  .tabs{display:flex;gap:8px;margin:12px 0;font-size:1rem}
+  .tabs{display:flex;gap:8px;margin:0 12px 12px 12px;font-size:1rem}
   .tab{padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700;color:var(--accent);background:transparent;border:1px solid transparent}
   .tab.active{background:var(--accent);color:#fff}
   .tab.locked{opacity:.45;cursor:not-allowed}
   .panel{border:1px solid #e6edf3;padding:14px;border-radius:8px;background:#fff}
-  .qArea{font-size:2rem}
+  .qArea{font-size:1.85rem}
   .option-row{display:grid;grid-template-columns:24px 1fr;gap:40px;padding-left:24px}
   .option-row input[type="radio"]{align-self:start;position:relative;top:0.8rem;transform: scale(1.6);accent-color: var(--accent)}
   .qtitle{font-weight:700;margin-bottom:8px}
@@ -30,7 +30,7 @@
   .hidden{display:none !important}
   footer{margin-top:12px;font-size:13px;color:var(--muted);align-self:end}
   table{width:100%;border-collapse:collapse;margin-top:6px}
-  .instruction{font-size: 1rem; margin:1rem 1rem 4rem 1rem;}
+  .instruction{font-size: 1rem; margin:0 2rem 1rem 2rem;}
   .option-row{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:flex-start;margin:6px 0}
   .option-row input[type="radio"]{margin-top:4px}
 </style>
@@ -38,24 +38,23 @@
 <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
 </head>
 <body>
-<div class="wrap">
-  <h2 style="margin:0 0 8px 0;font-size:1rem">BDI/BAI</h2>
+  <div class="wrap" style="transition:max-height 0.3s ease;" id="panel">
+    <h1 style="font-size:1.8rem; margin: 0">BDI/BAI</h1>
+  <div>
   <p style="margin:0;font-size:1rem;">Evaluation Date:</p>
   <div class="header-row">
-	<input style="flex:54" id="evalDate" type="text" placeholder="MM-DD-YY"/>
+    <input style="flex:54" id="evalDate" type="text" placeholder="MM-DD-YY"/>
     <div style="flex:100"></div>
   </div>
   <p style="margin:0;font-size:1rem;">Doctor's Name:</p>
   <div class="header-row">
-	<input style="flex:54" id="doctorField" type="text" placeholder="Doctor"/>
+    <input style="flex:54" id="doctorField" type="text" placeholder="Doctor"/>
     <div style="flex:100"></div>
   </div>
   <div style="display:flex;align-items:center;margin-bottom:1rem;color:red;">
     <button id="chooseTemplateBtn" class="btn ghost">Choose template PDF</button>
     <span id="templateName" class="small" style="color:green;min-width:200px;display:inline-block;padding-left:1rem"></span>
   </div>
-
-  <div style="transition:max-height 0.3s ease;" id="panel">
     <div class="header-row">
       <input id="nameField" type="text" placeholder="Name" style="flex:2"/>
       <input id="ageField" type="number" placeholder="Age" style="flex:1"/>
@@ -69,7 +68,7 @@
       <input id="educationField" type="text" placeholder="Education" style="flex:1.5"/>
     </div>
   </div>
-<div>
+</div>
 
 <div class="wrap">
   <div class="tabs">
@@ -77,20 +76,20 @@
     <div id="tabBAI" class="tab locked">BAI</div>
   </div>
 
-  <div id="panelBDI" class="panel" style="margin-top:12px">
-    <div style="display:flex;gap:12px;align-items:center">
-      <div style="flex:1">
-        <div class="small">BDI progress</div>
-        <div class="progress"><div id="bdiBar" class="bar"></div></div>
-      </div>
-      <div style="flex:1">
-        <div class="small">BAI progress</div>
-        <div class="progress"><div id="baiBar" class="bar"></div>
-	  </div>
+  <div style="display:flex;gap:12px;align-items:center">
+    <div style="flex:1">
+      <div class="small">BDI progress</div>
+      <div class="progress"><div id="bdiBar" class="bar"></div></div>
     </div>
-    <button class="btn" id="toggleBtn">^ Hide</button>
+    <div style="flex:1">
+      <div class="small">BAI progress</div>
+      <div class="progress"><div id="baiBar" class="bar"></div></div>
     </div>
-	<div class="instruction"><b>Instructions:</b> Pick one statement that best describes the way you have been feeling during the past two weeks, including today.</div>
+    <button class="btn" id="toggleBtn" style="font-size: 0.65rem;background: #98FB98; color: black">^ Hide</button>
+  </div>
+
+  <div id="panelBDI" class="panel">
+    <div class="instruction"><b>Instructions:</b> Pick one statement that best describes the way you have been feeling during the past two weeks, including today.</div>
     <div class="qArea" id="qAreaBDI"></div>
     <div class="nav">
       <button id="prevBDI" class="btn ghost hidden">Previous</button>
@@ -100,21 +99,8 @@
     </div>
   </div>
 
-  <div id="panelBAI" class="panel" style="margin-top:12px;display:none">
-    <div style="display:flex;gap:12px;align-items:center">
-        <div style="flex:1">
-          <div class="small">BDI progress</div>
-          <div class="progress"><div id="bdiBar" class="bar"></div>
-	    </div>
-      </div>
-      <div style="flex:1">
-        <div class="small">BAI progress</div>
-        <div class="progress"><div id="baiBar" class="bar"></div>
-	  </div>
-    </div>
-    <button class="btn" id="toggleBtn">^ Hide</button>
-    </div>
-	<div class="instruction">Instruction: Indicate how much you have been bothered by the following symptoms for the past week.</div>
+  <div id="panelBAI" class="panel" style="display:none">
+    <div class="instruction">Instruction: Indicate how much you have been bothered by the following symptoms for the past week.</div>
     <div class="qArea" id="qAreaBAI"></div>
     <div class="nav">
       <button id="prevBAI" class="btn ghost hidden">Previous</button>
@@ -125,8 +111,8 @@
   </div>
 
   <div style="margin-top:12px;display:flex;gap:10px">
-    <button id="generateBtn" class="btn hidden" type="button" disabled>Generate Form (PDF)</button>
-    <button id="generateBtn2" class="btn hidden" type="button" disabled>Generate Report (Word)</button>
+    <button id="generateBtn" class="btn" disabled>Generate Form (PDF)</button>
+    <button id="generateBtn2" class="btn" type="button" disabled>Generate Report (Word)</button>
   </div>
 
   <footer>  </footer>
@@ -295,6 +281,7 @@ fileInput.addEventListener('change', async(e)=> {
 document.body.appendChild(fileInput);
 chooseBtn.addEventListener('click', ()=> fileInput.click());
 
+/* ======= render logic ======= */
 function render(){
   // sync header
   answers.fields.name = (document.getElementById('nameField').value||'').trim();
@@ -305,8 +292,6 @@ function render(){
   answers.fields.education = document.getElementById('educationField').value||'';
   answers.fields.doctor = (document.getElementById('doctorField').value || '').trim();
   answers.fields.evalDate = (document.getElementById('evalDate').value || '').trim();
-  
-
   // BDI flow
   if(step >=1 && step <= bdi1.length){
     switchTab('BDI');
@@ -476,14 +461,8 @@ function updateTotals(){
 }
 function updateGenerateState(){
   const allAnswered = allBDIAnswered() && answers.page3.every(v=> v!==null && v!==undefined);
-
-  const pdfReady = allAnswered && !!templateArrayBuffer;
-  generateBtn.classList.toggle('hidden', !pdfReady);
-  generateBtn.disabled  = !pdfReady;
-
-  generateBtn2.classList.toggle('hidden', !allAnswered);
+  generateBtn.disabled  = !(allAnswered && templateArrayBuffer);
   generateBtn2.disabled = !allAnswered;
-
   if(allBDIAnswered()) tabBAI.classList.remove('locked');
 }
 
@@ -584,7 +563,7 @@ generateBtn.addEventListener('click', async ()=>{
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
 });
 
-/* =======Word Button Handler =======*/
+/* ======= Word Button Handler =======*/
 generateBtn2.addEventListener('click', async ()=>{
   const blob = await generateWordReport();
   if (!blob) return;
@@ -759,19 +738,19 @@ async function generateWordReport(){
 
         // BAI Severity lines
         new Paragraph({
-          children: [new TextRun({ text: "0–7\t\tMinimal Anxiety", bold: baiScore <= 7, size: 26 })],
+          children: [new TextRun({ text: "0–7\t\t Minimal Anxiety", bold: baiScore <= 7, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "8–15\t\tMild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
+          children: [new TextRun({ text: "8–15\t\t Mild Anxiety", bold: baiScore >= 8 && baiScore <= 15, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "16–25\t\tModerate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
+          children: [new TextRun({ text: "16–25\t\t Moderate Anxiety", bold: baiScore >= 16 && baiScore <= 25, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "26+\t\tSevere Anxiety", bold: baiScore >= 26, size: 26 })],
+          children: [new TextRun({ text: "26+\t\t Severe Anxiety", bold: baiScore >= 26, size: 26 })],
           indent: { left: 2880 }
         }),
 
@@ -800,19 +779,19 @@ async function generateWordReport(){
 
         // BDI Severity lines
         new Paragraph({
-          children: [new TextRun({ text: "0–9\t\tMinimal Depression", bold: bdiScore <= 9, size: 26 })],
+          children: [new TextRun({ text: "0–9\t\t Minimal Depression", bold: bdiScore <= 9, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "10–18\t\tMild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
+          children: [new TextRun({ text: "10–18\t\t Mild Depression", bold: bdiScore >= 10 && bdiScore <= 18, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "19–29\t\tModerate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
+          children: [new TextRun({ text: "19–29\t\t Moderate Depression", bold: bdiScore >= 19 && bdiScore <= 29, size: 26 })],
           indent: { left: 2880 }
         }),
         new Paragraph({
-          children: [new TextRun({ text: "30+\t\tSevere Depression", bold: bdiScore >= 30, size: 26 })],
+          children: [new TextRun({ text: "30+\t\t Severe Depression", bold: bdiScore >= 30, size: 26 })],
           indent: { left: 2880 }
         }),
 
@@ -824,6 +803,8 @@ async function generateWordReport(){
 
   return await Packer.toBlob(doc);
 }
+
+
 </script>
 </body>
 </html>

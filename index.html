@@ -33,6 +33,7 @@
   .instruction{font-size: 1rem; margin:0 2rem 1rem 2rem;}
   .option-row{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:flex-start;margin:6px 0}
   .option-row input[type="radio"]{margin-top:4px}
+  .hidden {display: none}
 </style>
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
@@ -111,8 +112,8 @@
   </div>
 
   <div style="margin-top:12px;display:flex;gap:10px">
-    <button id="generateBtn" class="btn" disabled>Generate Form (PDF)</button>
-    <button id="generateBtn2" class="btn" type="button" disabled>Generate Report (Word)</button>
+    <button id="generateBtn" class="btn hidden" disabled>Generate Form (PDF)</button>
+    <button id="generateBtn2" class="btn hidden" type="button" disabled>Generate Report (Word)</button>
   </div>
 
   <footer>  </footer>
@@ -320,7 +321,10 @@ function render(){
       switchTab('BAI');
       qAreaBAI.innerHTML = '<div class="qtitle">BAI complete — ready to generate report.</div><div class="small">Click Generate Report when ready.</div>';
       document.getElementById('prevBAI').classList.remove('hidden');
-      document.getElementById('nextBAI').classList.add('hidden');      // <-- hide Next
+      document.getElementById('nextBAI').classList.add('hidden');
+      generateBtn2.classList.remove('hidden');
+      generateBtn.classList.remove('hidden');
+      
     }
   }
 

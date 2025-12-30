@@ -697,18 +697,23 @@ async function generateWordReport(){
 
   const doc = new Document({
     styles: {
-      paragraphStyles: [
-        {
-          id: "JustifiedBody",
-          name: "Justified Body",
-          basedOn: "Normal",
-          next: "Normal",
-          quickFormat: true,
-          run: { size: 26 },
-          paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 0 } }
+    paragraphStyles: [
+      {
+        id: "Normal13pt",
+        name: "Normal 13pt",
+        basedOn: "Normal",
+        next: "Normal",
+        quickFormat: true,
+        run: {
+          size: 26,
+          font: "Times New Roman"
+        },
+        paragraph: { 
+          alignment: AlignmentType.LEFT,
         }
-      ]
-    },
+      }
+    ]
+  },
     sections: [{
       children: [
         // Title
